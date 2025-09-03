@@ -10,7 +10,7 @@ export const generateToken = async (userId, res) => {
         console.log("check 3")
         res.cookie("jwt", token, {
             maxAge: 1*60*60,
-            httpOnly: true, //prevents XSS attacks cross-site scripting attacks
+            httpOnly: true, 
             sameSite: 'strict',
             secure: process.env.NODE_ENV !== "development"? true: false
         })
