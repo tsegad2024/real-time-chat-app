@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs"
 import User from "../models/user.model.js";
 import { generateToken } from "../lib/utils.js";
+import cloudinary from '../lib/cloudinary.js'
 
 export const signup = async (req, res) =>{
     // res.send("signup route");
@@ -96,3 +97,23 @@ export const logout = (req, res) =>{
     }
 }
 
+export const updateProfile = async(req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const {profilePic} = req.body;
+        if (!profilePic) return res.status(400).json({message: "Profile Picture is Required"});
+
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+        
+        const updateduser = await User.findByIdAndUpdate(
+            userId, {
+                profilePic: uploadResponse.secure_url
+            }, {new: true}
+        )
+        res.status(200).json(updateduser)
+    } catch (error) {
+        console.log("Error in update profile: ", error)
+        res.status(500).json({message: "Internal server error"})
+    }
+}
